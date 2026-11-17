@@ -3,6 +3,8 @@ on:
   push:
     paths: ['FotoAuto/**', '.github/workflows/fotoauto-apk.yml']
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,3 +21,12 @@ jobs:
         with:
           name: FotoAuto-apk
           path: FotoAuto/app/build/outputs/apk/debug/app-debug.apk
+      - name: Rename APK
+        run: cp FotoAuto/app/build/outputs/apk/debug/app-debug.apk FotoAuto.apk
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: fotoauto-v${{ github.run_number }}
+          name: FotoAuto v${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          files: FotoAuto.apk
+          make_latest: true
